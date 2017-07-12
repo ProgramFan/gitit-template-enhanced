@@ -84,6 +84,17 @@
 
   <!-- editor -->
   <script>
+    if (window.copy_location) {
+      \$.ajax({
+        url: "/_showraw" + window.copy_location,
+        type: "GET",
+        dataType: "text"
+      }).done(function(result) {
+        \$('textarea[id="editedText"]').val(result);   
+      })
+      window.copy_location = null;
+    }
+
     // Change the textarea into an advanced edtior
     \$('textarea[id="editedText"]').markdownEditor({
       preview: true,
@@ -171,6 +182,64 @@
       \$('#page_create_dlg #relative').prop('checked', true);
       \$('#page_create_dlg #new_page_title').val('');
       \$("#page_create_dlg").modal('show');
+    });
+  </script>
+
+  <!-- Bootstrap Modal dialog for page copy -->
+  <div class="modal fade" tabindex="-1" role="dialog" id="page_copy_dlg">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Copy Page</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label>Copy Current Page As:</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="copied_page_title" aria-describedby="titleHelp" placeholder="Enter Page Title">
+                <span class="input-group-addon">
+                  <input type="checkbox" name="relative" id="copy_relative" />
+                  <span>Relative to current page</span>
+                </span>
+              </div>
+              <small id="titleHelp" class="form-text text-muted">
+                Input any string, use '/' to create page in subfolders, for example
+                'My Topic/My Thing'.
+              </small>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="page_copy_dlg_do">OK</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
+  <script>
+    \$('#page_copy_dlg_do').click(function(){
+      \$("#page_create_dlg").modal('hide');
+      var v = \$('#copied_page_title').val().trim().replace(/^\\//, '');
+      if (v) {
+        \$('#copied_page_title').val('');
+        if (\$('#copy_relative').prop('checked') && location.pathname != '/') {
+          var r = /.*?(\\/_\\w+)?(\\/[^\\/]+)?(\\/[^\\/]+)\$/;
+          var d = decodeURI(location.pathname.replace(r, '\$2'));
+          if (d) v = d.substr(1) + "/" + v;
+        }
+        var p = "/_edit/" + v;
+        window.copy_content = location.pathname;
+        location.pathname = p;
+      }
+    });
+
+    \$("#page_copy_link").click(function(){
+      \$('#page_copy_dlg #copy_relative').prop('checked', true);
+      \$('#page_copy_dlg #copied_page_title').val('');
+      \$("#page_copy_dlg").modal('show');
     });
   </script>
 

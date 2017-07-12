@@ -44,6 +44,10 @@
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                     Create a page
                 </a></li>
+                <li><a id="page_copy_link" href="javascript:void(0)">
+                    <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>
+                    Copy current page
+                </a></li>
                 $if(wikiupload)$
                 <!-- <li><a href="$base$/_upload"> -->
                 <li><a id="file_upload_link" href="javascript:void(0)">
